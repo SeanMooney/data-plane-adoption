@@ -781,8 +781,7 @@ spec:
 <ul>
 <li>See that service endpoints are defined:</li>
 </ul>
-<div class="highlight"><pre><span></span><code>export OS_CLIENT_CONFIG_FILE=clouds-adopted.yaml
-export OS_CLOUD=adopted
+<div class="highlight"><pre><span></span><code>alias openstack=&quot;oc exec -t openstackclient -- openstack&quot;
 
 openstack endpoint list
 </code></pre></div>
@@ -792,7 +791,7 @@ openstack endpoint list
   <small>
     
       Last update:
-      2023-06-14
+      2023-07-14
     
   </small>
 </div>

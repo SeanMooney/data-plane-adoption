@@ -912,8 +912,7 @@ in the adopted service:</p>
 </code></pre></div>
 <h3 id="image-upload">Image upload<a class="headerlink" href="#image-upload" title="Permanent link">#</a></h3>
 <p>We can test that an image can be created on from the adopted service.</p>
-<div class="highlight"><pre><span></span><code>(openstack)$ export OS_CLIENT_CONFIG_FILE=clouds-adopted.yaml
-(openstack)$ export OS_CLOUD=adopted
+<div class="highlight"><pre><span></span><code>(openstack)$ alias openstack=&quot;oc exec -t openstackclient -- openstack&quot;
 (openstack)$ curl -L -o /tmp/cirros-0.5.2-x86_64-disk.img http://download.cirros-cloud.net/0.5.2/cirros-0.5.2-x86_64-disk.img
     qemu-img convert -O raw /tmp/cirros-0.5.2-x86_64-disk.img /tmp/cirros-0.5.2-x86_64-disk.img.raw
     openstack image create --container-format bare --disk-format raw --file /tmp/cirros-0.5.2-x86_64-disk.img.raw cirros2
@@ -980,7 +979,7 @@ c3158cad-d50b-452f-bec1-f250562f5c1f
   <small>
     
       Last update:
-      2023-06-28
+      2023-07-14
     
   </small>
 </div>

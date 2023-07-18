@@ -743,7 +743,7 @@ incomplete OpenFlow table contents.</p>
 <p>Define the shell variables used in the steps below. The values are
 just illustrative, use values that are correct for your environment:</p>
 <div class="highlight"><pre><span></span><code><span class="nv">OVSDB_IMAGE</span><span class="o">=</span>quay.io/podified-antelope-centos9/openstack-ovn-base:current-podified
-<span class="nv">EXTERNAL_OVSDB_IP</span><span class="o">=</span><span class="m">172</span>.17.1.49
+<span class="nv">SOURCE_OVSDB_IP</span><span class="o">=</span><span class="m">172</span>.17.1.49
 
 <span class="c1"># ssh commands to reach the original controller machines</span>
 <span class="nv">CONTROLLER_SSH</span><span class="o">=</span><span class="s2">&quot;ssh -F ~/director_standalone/vagrant_ssh_config vagrant@standalone&quot;</span>
@@ -761,8 +761,8 @@ just illustrative, use values that are correct for your environment:</p>
 <li>Backup OVN databases.</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="nv">client</span><span class="o">=</span><span class="s2">&quot;podman run -i --rm --userns=keep-id -u </span><span class="nv">$UID</span><span class="s2"> -v </span><span class="nv">$PWD</span><span class="s2">:</span><span class="nv">$PWD</span><span class="s2">:z,rw -w </span><span class="nv">$PWD</span><span class="s2"> </span><span class="nv">$OVSDB_IMAGE</span><span class="s2"> ovsdb-client&quot;</span>
-<span class="si">${</span><span class="nv">client</span><span class="si">}</span><span class="w"> </span>backup<span class="w"> </span>tcp:<span class="nv">$EXTERNAL_OVSDB_IP</span>:6641<span class="w"> </span>&gt;<span class="w"> </span>ovs-nb.db
-<span class="si">${</span><span class="nv">client</span><span class="si">}</span><span class="w"> </span>backup<span class="w"> </span>tcp:<span class="nv">$EXTERNAL_OVSDB_IP</span>:6642<span class="w"> </span>&gt;<span class="w"> </span>ovs-sb.db
+<span class="si">${</span><span class="nv">client</span><span class="si">}</span><span class="w"> </span>backup<span class="w"> </span>tcp:<span class="nv">$SOURCE_OVSDB_IP</span>:6641<span class="w"> </span>&gt;<span class="w"> </span>ovs-nb.db
+<span class="si">${</span><span class="nv">client</span><span class="si">}</span><span class="w"> </span>backup<span class="w"> </span>tcp:<span class="nv">$SOURCE_OVSDB_IP</span>:6642<span class="w"> </span>&gt;<span class="w"> </span>ovs-sb.db
 </code></pre></div>
 <ul>
 <li>Start podified OVN database services prior to import.</li>
@@ -850,7 +850,7 @@ oc<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-i
   <small>
     
       Last update:
-      2023-06-05
+      2023-07-13
     
   </small>
 </div>

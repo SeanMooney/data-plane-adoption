@@ -745,8 +745,7 @@ spec:
 <li>See that Placement endpoints are defined and pointing to the
   podified FQDNs and that Placement API responds.</li>
 </ul>
-<div class="highlight"><pre><span></span><code>export OS_CLIENT_CONFIG_FILE=clouds-adopted.yaml
-export OS_CLOUD=adopted
+<div class="highlight"><pre><span></span><code>alias openstack=&quot;oc exec -t openstackclient -- openstack&quot;
 
 openstack endpoint list | grep placement
 
@@ -764,7 +763,7 @@ openstack resource class list
   <small>
     
       Last update:
-      2023-06-08
+      2023-07-14
     
   </small>
 </div>
