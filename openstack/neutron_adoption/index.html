@@ -12,20 +12,20 @@
         <meta name="author" content="OpenStack Team">
       
       
-        <link rel="canonical" href="https://openstack-k8s-operators.github.io/data-plane-adoption/openstack/other_services_adoption/">
+        <link rel="canonical" href="https://openstack-k8s-operators.github.io/data-plane-adoption/openstack/neutron_adoption/">
       
       
-        <link rel="prev" href="../cinder_adoption/">
+        <link rel="prev" href="../keystone_adoption/">
       
       
-        <link rel="next" href="../edpm_adoption/">
+        <link rel="next" href="../glance_adoption/">
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.1, mkdocs-material-9.1.21">
+      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.21">
     
     
       
-        <title>Adoption of other services - OpenStack Data Plane Adoption</title>
+        <title>Neutron adoption - OpenStack Data Plane Adoption</title>
       
     
     
@@ -77,7 +77,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adoption-of-other-services" class="md-skip">
+        <a href="#neutron-adoption" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Adoption of other services
+              Neutron adoption
             
           </span>
         </div>
@@ -354,6 +354,102 @@
               
   
   
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Neutron adoption
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Neutron adoption
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    Prerequisites
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#procedure-neutron-adoption" class="md-nav__link">
+    Procedure - Neutron adoption
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#post-checks" class="md-nav__link">
+    Post-checks
+  </a>
+  
+    <nav class="md-nav" aria-label="Post-checks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inspect-the-resulting-neutron-pods" class="md-nav__link">
+    Inspect the resulting neutron pods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-that-neutron-api-service-is-registered-in-keystone" class="md-nav__link">
+    Check that Neutron API service is registered in Keystone
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-sample-resources" class="md-nav__link">
+    Create sample resources
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
   
     <li class="md-nav__item">
       <a href="../glance_adoption/" class="md-nav__link">
@@ -387,89 +483,6 @@
       <a href="../cinder_adoption/" class="md-nav__link">
         Cinder adoption
       </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-    
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Adoption of other services
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        Adoption of other services
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#prerequisites" class="md-nav__link">
-    Prerequisites
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#variables" class="md-nav__link">
-    Variables
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pre-checks" class="md-nav__link">
-    Pre-checks
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#procedure-adoption-of-other-services" class="md-nav__link">
-    Procedure - Adoption of other services
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#post-checks" class="md-nav__link">
-    Post-checks
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -683,22 +696,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#variables" class="md-nav__link">
-    Variables
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pre-checks" class="md-nav__link">
-    Pre-checks
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#procedure-adoption-of-other-services" class="md-nav__link">
-    Procedure - Adoption of other services
+  <a href="#procedure-neutron-adoption" class="md-nav__link">
+    Procedure - Neutron adoption
   </a>
   
 </li>
@@ -707,6 +706,33 @@
   <a href="#post-checks" class="md-nav__link">
     Post-checks
   </a>
+  
+    <nav class="md-nav" aria-label="Post-checks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inspect-the-resulting-neutron-pods" class="md-nav__link">
+    Inspect the resulting neutron pods
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check-that-neutron-api-service-is-registered-in-keystone" class="md-nav__link">
+    Check that Neutron API service is registered in Keystone
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#create-sample-resources" class="md-nav__link">
+    Create sample resources
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -728,70 +754,64 @@
   
 
 
-<h1 id="adoption-of-other-services">Adoption of other services<a class="headerlink" href="#adoption-of-other-services" title="Permanent link">#</a></h1>
-<p>This part of the guide adopts the remaining services that don't have a
-specific guide of their own. It is likely that as adoption gets
-developed further, services will be removed from here and put into
-their own guides (e.g. like
-<a href="https://github.com/openstack-k8s-operators/data-plane-adoption/blob/main/glance_adoption.md">Glance</a>).</p>
+<h1 id="neutron-adoption">Neutron adoption<a class="headerlink" href="#neutron-adoption" title="Permanent link">#</a></h1>
+<p>Adopting Neutron means that an existing <code>OpenStackControlPlane</code> CR, where Neutron
+is supposed to be disabled, should be patched to start the service with the
+configuration parameters provided by the source environment.</p>
+<p>When the procedure is over, the expectation is to see the <code>NeutronAPI</code> service
+up and running: the <code>Keystone endpoints</code> should be updated and the same backend
+of the source Cloud will be available. If the conditions above are met, the
+adoption is considered concluded.</p>
+<p>This guide also assumes that:</p>
+<ol>
+<li>A <code>TripleO</code> environment (the source Cloud) is running on one side;</li>
+<li>A <code>SNO</code> / <code>CodeReadyContainers</code> is running on the other side.</li>
+</ol>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">#</a></h2>
 <ul>
-<li>Previous Adoption steps completed.</li>
+<li>Previous Adoption steps completed. Notably, MariaDB and Keystone
+  should be already adopted.</li>
 </ul>
-<h2 id="variables">Variables<a class="headerlink" href="#variables" title="Permanent link">#</a></h2>
-<p>(There are no shell variables necessary currently.)</p>
-<h2 id="pre-checks">Pre-checks<a class="headerlink" href="#pre-checks" title="Permanent link">#</a></h2>
-<h2 id="procedure-adoption-of-other-services">Procedure - Adoption of other services<a class="headerlink" href="#procedure-adoption-of-other-services" title="Permanent link">#</a></h2>
-<ul>
-<li>Deploy the rest of the control plane services:</li>
-</ul>
+<h2 id="procedure-neutron-adoption">Procedure - Neutron adoption<a class="headerlink" href="#procedure-neutron-adoption" title="Permanent link">#</a></h2>
+<p>As already done for <a href="https://github.com/openstack-k8s-operators/data-plane-adoption/blob/main/keystone_adoption.md">Keystone</a>, the Neutron Adoption follows the same pattern.</p>
+<p>Patch OpenStackControlPlane to deploy Neutron:</p>
 <div class="highlight"><pre><span></span><code>oc patch openstackcontrolplane openstack --type=merge --patch &#39;
 spec:
-  # cinder:
-  #   enabled: true
-  #   template:
-  #     cinderAPI:
-  #       replicas: 1
-  #       containerImage: quay.io/podified-antelope-centos9/openstack-cinder-api:current-podified
-  #     cinderScheduler:
-  #       replicas: 1
-  #       containerImage: quay.io/podified-antelope-centos9/openstack-cinder-scheduler:current-podified
-  #     cinderBackup:
-  #       replicas: 1
-  #       containerImage: quay.io/podified-antelope-centos9/openstack-cinder-backup:current-podified
-  #     cinderVolumes:
-  #       volume1:
-  #         containerImage: quay.io/podified-antelope-centos9/openstack-cinder-volume:current-podified
-  #         replicas: 1
-
   neutron:
     enabled: true
     template:
       databaseInstance: openstack
-      containerImage: quay.io/podified-antelope-centos9/openstack-neutron-server:current-podified
       secret: osp-secret
-
-  # nova:
-  #   enabled: true
-  #   template:
-  #     secret: osp-secret
 &#39;
 </code></pre></div>
 <h2 id="post-checks">Post-checks<a class="headerlink" href="#post-checks" title="Permanent link">#</a></h2>
-<ul>
-<li>See that service endpoints are defined:</li>
-</ul>
-<div class="highlight"><pre><span></span><code>alias openstack=&quot;oc exec -t openstackclient -- openstack&quot;
-
-openstack endpoint list
+<h3 id="inspect-the-resulting-neutron-pods">Inspect the resulting neutron pods<a class="headerlink" href="#inspect-the-resulting-neutron-pods" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code><span class="nv">NEUTRON_API_POD</span><span class="o">=</span><span class="sb">`</span>oc<span class="w"> </span>get<span class="w"> </span>pods<span class="w"> </span>-l<span class="w"> </span><span class="nv">service</span><span class="o">=</span>neutron<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-f<span class="w"> </span><span class="m">1</span><span class="w"> </span>-d<span class="s1">&#39; &#39;</span><span class="sb">`</span>
+oc<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-t<span class="w"> </span><span class="nv">$NEUTRON_API_POD</span><span class="w"> </span>-c<span class="w"> </span>neutron-api<span class="w"> </span>--<span class="w"> </span>cat<span class="w"> </span>/etc/neutron/neutron.conf
 </code></pre></div>
+<h3 id="check-that-neutron-api-service-is-registered-in-keystone">Check that Neutron API service is registered in Keystone<a class="headerlink" href="#check-that-neutron-api-service-is-registered-in-keystone" title="Permanent link">#</a></h3>
+<div class="highlight"><pre><span></span><code>openstack<span class="w"> </span>service<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>network
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>openstack<span class="w"> </span>endpoint<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>network
+
+<span class="p">|</span><span class="w"> </span>6a805bd6c9f54658ad2f24e5a0ae0ab6<span class="w"> </span><span class="p">|</span><span class="w"> </span>regionOne<span class="w"> </span><span class="p">|</span><span class="w"> </span>neutron<span class="w">      </span><span class="p">|</span><span class="w"> </span>network<span class="w">      </span><span class="p">|</span><span class="w"> </span>True<span class="w">    </span><span class="p">|</span><span class="w"> </span>public<span class="w">    </span><span class="p">|</span><span class="w"> </span>http://neutron-public-openstack.apps-crc.testing<span class="w">  </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span>b943243e596847a9a317c8ce1800fa98<span class="w"> </span><span class="p">|</span><span class="w"> </span>regionOne<span class="w"> </span><span class="p">|</span><span class="w"> </span>neutron<span class="w">      </span><span class="p">|</span><span class="w"> </span>network<span class="w">      </span><span class="p">|</span><span class="w"> </span>True<span class="w">    </span><span class="p">|</span><span class="w"> </span>internal<span class="w">  </span><span class="p">|</span><span class="w"> </span>http://neutron-internal.openstack.svc:9696<span class="w">        </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span>f97f2b8f7559476bb7a5eafe3d33cee7<span class="w"> </span><span class="p">|</span><span class="w"> </span>regionOne<span class="w"> </span><span class="p">|</span><span class="w"> </span>neutron<span class="w">      </span><span class="p">|</span><span class="w"> </span>network<span class="w">      </span><span class="p">|</span><span class="w"> </span>True<span class="w">    </span><span class="p">|</span><span class="w"> </span>admin<span class="w">     </span><span class="p">|</span><span class="w"> </span>http://192.168.122.99:9696<span class="w">                        </span><span class="p">|</span>
+</code></pre></div>
+<h3 id="create-sample-resources">Create sample resources<a class="headerlink" href="#create-sample-resources" title="Permanent link">#</a></h3>
+<p>We can now test that user can create networks, subnets, ports, routers etc.</p>
+<div class="highlight"><pre><span></span><code>openstack<span class="w"> </span>network<span class="w"> </span>create<span class="w"> </span>net
+openstack<span class="w"> </span>subnet<span class="w"> </span>create<span class="w"> </span>--network<span class="w"> </span>net<span class="w"> </span>--subnet-range<span class="w"> </span><span class="m">10</span>.0.0.0/24<span class="w"> </span>subnet
+openstack<span class="w"> </span>router<span class="w"> </span>create<span class="w"> </span>router
+</code></pre></div>
+<p>NOTE: this page should be expanded to include information on SR-IOV adoption.</p>
 
   <hr>
 <div class="md-source-file">
   <small>
     
       Last update:
-      2023-07-14
+      2023-07-20
     
   </small>
 </div>
