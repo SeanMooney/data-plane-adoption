@@ -788,8 +788,8 @@ just illustrative, use values that are correct for your environment:</p>
 <ul>
 <li>Fetch podified OVN IP addresses.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="nv">PODIFIED_OVSDB_NB_IP</span><span class="o">=</span><span class="k">$(</span>kubectl<span class="w"> </span>get<span class="w"> </span>po<span class="w"> </span>ovsdbserver-nb-0<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.metadata.annotations.k8s\.v1\.cni\.cncf\.io/networks-status}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;map(. | select(.name==&quot;openstack/internalapi&quot;))[0].ips[0]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;&quot;&#39;</span><span class="k">)</span>
-<span class="nv">PODIFIED_OVSDB_SB_IP</span><span class="o">=</span><span class="k">$(</span>kubectl<span class="w"> </span>get<span class="w"> </span>po<span class="w"> </span>ovsdbserver-sb-0<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.metadata.annotations.k8s\.v1\.cni\.cncf\.io/networks-status}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;map(. | select(.name==&quot;openstack/internalapi&quot;))[0].ips[0]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;&quot;&#39;</span><span class="k">)</span>
+<div class="highlight"><pre><span></span><code><span class="nv">PODIFIED_OVSDB_NB_IP</span><span class="o">=</span><span class="k">$(</span>kubectl<span class="w"> </span>get<span class="w"> </span>po<span class="w"> </span>ovsdbserver-nb-0<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.metadata.annotations.k8s\.v1\.cni\.cncf\.io/network-status}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;map(. | select(.name==&quot;openstack/internalapi&quot;))[0].ips[0]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;&quot;&#39;</span><span class="k">)</span>
+<span class="nv">PODIFIED_OVSDB_SB_IP</span><span class="o">=</span><span class="k">$(</span>kubectl<span class="w"> </span>get<span class="w"> </span>po<span class="w"> </span>ovsdbserver-sb-0<span class="w"> </span>-o<span class="w"> </span><span class="nv">jsonpath</span><span class="o">=</span><span class="s1">&#39;{.metadata.annotations.k8s\.v1\.cni\.cncf\.io/network-status}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;map(. | select(.name==&quot;openstack/internalapi&quot;))[0].ips[0]&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;&quot;&#39;</span><span class="k">)</span>
 </code></pre></div>
 <ul>
 <li>Upgrade database schema for the backup files.</li>
@@ -850,7 +850,7 @@ oc<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-i
   <small>
     
       Last update:
-      2023-07-13
+      2023-07-20
     
   </small>
 </div>
