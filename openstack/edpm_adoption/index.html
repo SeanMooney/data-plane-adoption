@@ -897,6 +897,8 @@ EOF
           - configure-os
           - run-os
         env:
+          - name: ANSIBLE_CALLBACKS_ENABLED
+            value: &quot;profile_tasks&quot;
           - name: ANSIBLE_FORCE_COLOR
             value: &quot;True&quot;
           - name: ANSIBLE_ENABLE_TASK_DEBUGGER
@@ -980,7 +982,7 @@ Note: Role vars will be inherited by nodes, more details <a href="https://openst
   <small>
     
       Last update:
-      2023-08-01
+      2023-08-02
     
   </small>
 </div>
