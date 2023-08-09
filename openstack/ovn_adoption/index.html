@@ -795,7 +795,7 @@ just illustrative, use values that are correct for your environment:</p>
 <li>Upgrade database schema for the backup files.</li>
 </ul>
 <div class="highlight"><pre><span></span><code>podman run -it --rm --userns=keep-id -u $UID -v $PWD:$PWD:z,rw -w $PWD $OVSDB_IMAGE bash -c &quot;ovsdb-client get-schema tcp:$PODIFIED_OVSDB_NB_IP:6641 &gt; ./ovs-nb.ovsschema &amp;&amp; ovsdb-tool convert ovs-nb.db ./ovs-nb.ovsschema&quot;
-podman run -it --rm --userns=keep-id -u $UID -v $PWD:$PWD:z,rw -w $PWD $OVSDB_IMAGE bash -c &quot;ovsdb-client get-schema tcp:$PODIFIED_OVSDB_SB_IP:6641 &gt; ./ovs-sb.ovsschema &amp;&amp; ovsdb-tool convert ovs-sb.db ./ovs-sb.ovsschema&quot;
+podman run -it --rm --userns=keep-id -u $UID -v $PWD:$PWD:z,rw -w $PWD $OVSDB_IMAGE bash -c &quot;ovsdb-client get-schema tcp:$PODIFIED_OVSDB_SB_IP:6642 &gt; ./ovs-sb.ovsschema &amp;&amp; ovsdb-tool convert ovs-sb.db ./ovs-sb.ovsschema&quot;
 </code></pre></div>
 <ul>
 <li>Restore database backup to podified OVN database servers.</li>
@@ -850,7 +850,7 @@ oc<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-i
   <small>
     
       Last update:
-      2023-07-20
+      2023-08-08
     
   </small>
 </div>
