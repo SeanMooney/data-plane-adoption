@@ -38,6 +38,21 @@
         oc set data secret/osp-secret "PlacementPassword={{ placement_password }}"
     {% endif %}
 
+- name: prepare openstack control plane CR
+  when:
+    - openstack_cr != ""
+    - not periodic|default(false)
+  ansible.builtin.copy:
+    src: "{{ openstack_cr }}"
+    dest: "../config/base/openstack_control_plane_custom.yaml"
+
+- name: prepare kustomize base
+  when: not periodic|default(false)
+  ansible.builtin.template:
+    src: kustomization.yaml.j2
+    dest: "../config/base/kustomization.yaml"
+    force: true
+
 - name: when not a periodic CI job use the base deployment
   when: not periodic|default(false)
   ansible.builtin.shell: |
@@ -76,7 +91,7 @@
   ansible.builtin.shell: |
     {{ shell_header }}
     {{ oc_header }}
-    oc get pod mariadb-openstack -o jsonpath='{.status.phase}{"\n"}' | grep Running
+    oc get pod {{ db_pod_name }} -o jsonpath='{.status.phase}{"\n"}' | grep Running
   register: mariadb_running_result
   until: mariadb_running_result is success
   retries: 60
@@ -86,7 +101,7 @@
   ansible.builtin.shell: |
     {{ shell_header }}
     {{ oc_header }}
-    oc get pod mariadb-openstack-cell1 -o jsonpath='{.status.phase}{"\n"}' | grep Running
+    oc get pod {{ cell1_db_pod_name }} -o jsonpath='{.status.phase}{"\n"}' | grep Running
   register: mariadb_running_result
   until: mariadb_running_result is success
   retries: 60

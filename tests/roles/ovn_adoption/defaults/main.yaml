@@ -1,1 +1,2 @@
 ovn_copy_tmp_dir: tmp/ovn
+ovn_image: quay.io/podified-antelope-centos9/openstack-ovn-base:current-podified

@@ -1,5 +1,6 @@
 /local
 /tests/config/tmp
+/tests/config/base/openstack_control_plane_custom.yaml
 /tests/inventory.yaml
 /tests/secrets.yaml
 /tests/playbooks/tmp

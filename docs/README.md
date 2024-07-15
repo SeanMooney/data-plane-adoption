@@ -21,11 +21,15 @@ Perform the actions from the sub-documents in the following order:
 
 * [Neutron adoption](openstack/neutron_adoption.md)
 
+* [Ceph backend configuration (if applicable)](openstack/ceph_backend_configuration.md)
+
 * [Glance adoption](openstack/glance_adoption.md)
 
 * [Placement adoption](openstack/placement_adoption.md)
 
 * [Cinder adoption](openstack/cinder_adoption.md)
+
+* [Horizon adoption](openstack/horizon_adoption.md)
 
 * [Dataplane adoption](openstack/edpm_adoption.md)
 

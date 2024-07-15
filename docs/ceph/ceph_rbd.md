@@ -337,7 +337,7 @@ cp ceph_spec.yaml ceph_spec.yaml.bkp # backup the ceph_spec.yaml file
 Apply the resulting spec:
 
 ```
-ceph orch apply -i ceph_spec.yaml 
+ceph orch apply -i ceph_spec.yaml
 
  The result of 12 is having a new mgr deployed on the oc0-ceph-0 node, and the spec reconciled within cephadm
 

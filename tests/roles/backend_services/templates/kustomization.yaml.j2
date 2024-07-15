@@ -1,0 +1,6 @@
+resources:
+{% if openstack_cr != "" %}
+- openstack_control_plane_custom.yaml
+{% else %}
+- openstack_control_plane.yaml
+{% endif %}

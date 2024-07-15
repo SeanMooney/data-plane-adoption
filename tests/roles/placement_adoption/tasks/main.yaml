@@ -2,7 +2,7 @@
   ansible.builtin.shell: |
     {{ shell_header }}
     {{ oc_header }}
-    oc patch openstackcontrolplane openstack --type=merge --patch '
+    oc patch openstackcontrolplane {{ openstack_cr_name }} --type=merge --patch '
     spec:
       placement:
         enabled: true

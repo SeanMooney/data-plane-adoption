@@ -2,7 +2,7 @@
   ansible.builtin.shell: |
     {{ shell_header }}
     {{ oc_header }}
-    oc patch openstackcontrolplane openstack --type=merge --patch '
+    oc patch openstackcontrolplane {{ openstack_cr_name }} --type=merge --patch '
     spec:
       ovn:
         enabled: true
@@ -22,30 +22,133 @@
   ansible.builtin.shell: |
     {{ shell_header }}
     {{ oc_header }}
-    oc get pod --selector=service=ovsdbserver-nb -o jsonpath='{.items[0].status.phase}{"\n"}' | grep Running
-    oc get pod --selector=service=ovsdbserver-sb -o jsonpath='{.items[0].status.phase}{"\n"}' | grep Running
-  register: ovn_ovsdb_servers_running_result
-  until: ovn_ovsdb_servers_running_result is success
-  retries: 60
-  delay: 2
+    oc wait --for=jsonpath='{.status.phase}'=Running pod --selector=service=ovsdbserver-nb
+    oc wait --for=jsonpath='{.status.phase}'=Running pod --selector=service=ovsdbserver-sb
 
-- name: get podified OVN NB ovsdb-server IP
+# NOTE: w/o pods readiness gates, a service IP is not immediately comes in, so we wait
+- name: get podified OVN NB ovsdb-server service cluster IP
   ansible.builtin.shell: |
     {{ shell_header }}
     {{ oc_header }}
-    oc get pod ovsdbserver-nb-0 -o jsonpath='{.metadata.annotations.k8s\.v1\.cni\.cncf\.io/network-status}' | \
-    jq 'map(. | select(.name=="openstack/internalapi"))[0].ips[0]' | \
-    tr -d '"'
+    oc get svc --selector "statefulset.kubernetes.io/pod-name=ovsdbserver-nb-0" -ojsonpath='{.items[0].spec.clusterIP}'
   register: podified_ovn_nb_ip_result
+  until: podified_ovn_nb_ip_result is success
+  retries: 10
+  delay: 2
 
 - name: get podified OVN SB ovsdb-server IP
   ansible.builtin.shell: |
     {{ shell_header }}
     {{ oc_header }}
-    oc get pod ovsdbserver-sb-0 -o jsonpath='{.metadata.annotations.k8s\.v1\.cni\.cncf\.io/network-status}' | \
-    jq 'map(. | select(.name=="openstack/internalapi"))[0].ips[0]' | \
-    tr -d '"'
+    oc get svc --selector "statefulset.kubernetes.io/pod-name=ovsdbserver-sb-0" -ojsonpath='{.items[0].spec.clusterIP}'
   register: podified_ovn_sb_ip_result
+  until: podified_ovn_sb_ip_result is success
+  retries: 10
+  delay: 2
+
+# NOTE: this represents tmp/ovn/oc_run_args.yaml contents for the documented manual steps
+- name: set fact for adoption helper pod run args
+  ansible.builtin.set_fact:
+    oc_run_args:
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: adoption
+      spec:
+        containers:
+        - image: "{{ ovn_image }}"
+          command: [ "sh", "-c", "sleep infinity"]
+          name: adoption
+          volumeMounts:
+          - mountPath: /backup
+            name: backup
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ALL
+          runAsNonRoot: true
+          runAsUser: 1000
+          seccompProfile:
+            type: RuntimeDefault
+        volumes:
+        - hostPath:
+            path: "{{ playbook_dir }}/{{ ovn_copy_tmp_dir }}"
+            type: Directory
+          name: backup
+
+- name: create ovn DB copy dir
+  ansible.builtin.file:
+    path: "{{ ovn_copy_tmp_dir }}"
+    state: directory
+    mode: "0750"
+
+# NOTE: ansible escapes JSON in shell so this task and the documented manual command differs.
+# The shell equivalent of getting this as oc_run_args.json:
+# cat tmp/ovn/oc_run_args.yaml | python -c "import json, yaml, sys; print(json.dumps(yaml.safe_load(sys.stdin)))"
+- name: prepare oc run args file
+  copy:
+    content: "{{ oc_run_args }}"
+    dest: "{{ ovn_copy_tmp_dir }}/oc_run_args.json"
+
+- name: start an adoption helper pod
+  ansible.builtin.shell: |-
+    {{ shell_header }}
+    {{ oc_header }}
+    oc delete pod adoption --ignore-not-found=true;
+    oc apply -f {{ playbook_dir }}/{{ ovn_copy_tmp_dir }}/oc_run_args.json;
+    oc wait --for=condition=Ready pod adoption --timeout=30s
+  changed_when: true
+  notify: stop adoption helper pod
+
+- name: set fact for oc run args
+  ansible.builtin.set_fact:
+    oc_run_args:
+      spec:
+        containers:
+        - image: "{{ ovn_image }}"
+          command: [ "sh", "-c", "sleep infinity"]
+          name: adoption
+          volumeMounts:
+          - mountPath: /backup
+            name: backup
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ALL
+          runAsNonRoot: true
+          runAsUser: 1000
+          seccompProfile:
+            type: RuntimeDefault
+        volumes:
+        - hostPath:
+            path: "{{ playbook_dir }}/{{ ovn_copy_tmp_dir }}"
+            type: Directory
+          name: backup
+
+- name: prepare oc run args file
+  copy:
+    content: "{{ oc_run_args }}"
+    dest: "{{ ovn_copy_tmp_dir }}/oc_run_args.yaml"
+  register: oc_run_args_file
+
+- name: set fact for oc run command
+  ansible.builtin.set_fact:
+    oc_run_cmd: >-
+      oc delete pod adoption --ignore-not-found=true;
+      oc run adoption
+      --image {{ ovn_image }}
+      --overrides='$(cat {{ playbook_dir }}/{{ ovn_copy_tmp_dir }}/oc_run_args.yaml)';
+      oc wait --for=condition=Ready pod adoption --timeout=30s
+
+- name: start an adoption helper pod
+  ansible.builtin.shell: |-
+    {{ shell_header }}
+    {{ oc_header }}
+    
+    OCRUN="{{ oc_run_cmd }}"
+    eval $OCRUN
+  changed_when: true
+  notify: stop adoption helper pod
 
 - name: set OVN copy shell vars
   no_log: "{{ use_no_log }}"
@@ -53,7 +156,7 @@
     ovn_copy_shell_vars: |
       PODIFIED_OVSDB_NB_IP={{ podified_ovn_nb_ip_result.stdout }}
       PODIFIED_OVSDB_SB_IP={{ podified_ovn_sb_ip_result.stdout }}
-      OVSDB_IMAGE=quay.io/podified-antelope-centos9/openstack-ovn-base:current-podified
+      OVSDB_IMAGE={{ ovn_image }}
 
       # TODO: remove the default(external_...) when CI is transitioned to use 'source_...'
       SOURCE_OVSDB_IP={{ source_ovndb_ip|default(external_ovndb_ip) }}
@@ -80,12 +183,10 @@
     {{ oc_header }}
     {{ ovn_copy_shell_vars }}
 
-    mkdir -p {{ ovn_copy_tmp_dir }}
     cd {{ ovn_copy_tmp_dir }}
 
-    client="podman run -i --rm --userns=keep-id -u $UID -v $PWD:$PWD:z,rw -w $PWD $OVSDB_IMAGE ovsdb-client"
-    ${client} backup tcp:$SOURCE_OVSDB_IP:6641 > ovs-nb.db
-    ${client} backup tcp:$SOURCE_OVSDB_IP:6642 > ovs-sb.db
+    oc exec adoption -- bash -c "ovsdb-client backup tcp:$SOURCE_OVSDB_IP:6641 > /backup/ovs-nb.db"
+    oc exec adoption -- bash -c "ovsdb-client backup tcp:$SOURCE_OVSDB_IP:6642 > /backup/ovs-sb.db"
 
 - name: upgrade OVN databases to the latest schema from podified ovsdb-servers
   no_log: "{{ use_no_log }}"
@@ -96,8 +197,8 @@
 
     cd {{ ovn_copy_tmp_dir }}
 
-    podman run -it --rm --userns=keep-id -u $UID -v $PWD:$PWD:z,rw -w $PWD $OVSDB_IMAGE bash -c "ovsdb-client get-schema tcp:$PODIFIED_OVSDB_NB_IP:6641 > ./ovs-nb.ovsschema && ovsdb-tool convert ovs-nb.db ./ovs-nb.ovsschema"
-    podman run -it --rm --userns=keep-id -u $UID -v $PWD:$PWD:z,rw -w $PWD $OVSDB_IMAGE bash -c "ovsdb-client get-schema tcp:$PODIFIED_OVSDB_SB_IP:6642 > ./ovs-sb.ovsschema && ovsdb-tool convert ovs-sb.db ./ovs-sb.ovsschema"
+    oc exec adoption -- bash -c "ovsdb-client get-schema tcp:$PODIFIED_OVSDB_NB_IP:6641 > /backup/ovs-nb.ovsschema && ovsdb-tool convert /backup/ovs-nb.db /backup/ovs-nb.ovsschema"
+    oc exec adoption -- bash -c "ovsdb-client get-schema tcp:$PODIFIED_OVSDB_SB_IP:6642 > /backup/ovs-sb.ovsschema && ovsdb-tool convert /backup/ovs-sb.db /backup/ovs-sb.ovsschema"
 
 - name: restore OVN database backups to podified ovsdb-servers
   no_log: "{{ use_no_log }}"
@@ -108,20 +209,20 @@
 
     cd {{ ovn_copy_tmp_dir }}
 
-    podman run -it --rm --userns=keep-id -u $UID -v $PWD:$PWD:z,rw -w $PWD $OVSDB_IMAGE bash -c "ovsdb-client restore tcp:$PODIFIED_OVSDB_NB_IP:6641 < ovs-nb.db"
-    podman run -it --rm --userns=keep-id -u $UID -v $PWD:$PWD:z,rw -w $PWD $OVSDB_IMAGE bash -c "ovsdb-client restore tcp:$PODIFIED_OVSDB_SB_IP:6642 < ovs-sb.db"
+    oc exec adoption -- bash -c "ovsdb-client restore tcp:$PODIFIED_OVSDB_NB_IP:6641 < /backup/ovs-nb.db"
+    oc exec adoption -- bash -c "ovsdb-client restore tcp:$PODIFIED_OVSDB_SB_IP:6642 < /backup/ovs-sb.db"
 
 - name: deploy podified OVN northd service to keep databases in sync
   ansible.builtin.shell: |
     {{ shell_header }}
     {{ oc_header }}
-    oc patch openstackcontrolplane openstack --type=merge --patch '
+    oc patch openstackcontrolplane {{ openstack_cr_name }} --type=merge --patch '
     spec:
       ovn:
         enabled: true
         template:
           ovnNorthd:
-            containerImage: quay.io/podified-antelope-centos9/openstack-ovn-northd:current-podified
+            containerImage: {{ container_registry|default("quay.io") }}/{{ container_namespace|default("podified-antelope-centos9") }}/openstack-ovn-northd:{{ container_tag | default("current-podified") }}
             networkAttachment: internalapi
             replicas: 1
     '

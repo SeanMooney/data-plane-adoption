@@ -3,8 +3,9 @@
     {{ shell_header }}
     {{ oc_header }}
 
-    oc delete --wait=false openstackcontrolplane/openstack || true
-    oc patch openstackcontrolplane openstack --type=merge --patch '
+    oc delete --wait=false openstackdataplane/openstack || true
+    oc delete --wait=false openstackcontrolplane/{{ openstack_cr_name }} || true
+    oc patch openstackcontrolplane {{ openstack_cr_name }} --type=merge --patch '
     metadata:
       finalizers: []
     ' || true
@@ -12,12 +13,20 @@
     while oc get pod | grep rabbitmq-server-0; do
         sleep 2
     done
-    while oc get pod | grep mariadb-openstack; do
+    while oc get pod | grep {{ db_pod_name }}; do
         sleep 2
     done
 
     oc delete secret osp-secret || true
   when: pcp_cleanup_enabled|bool
+
+- name: revert standalone VM to snapshotted state
+  ansible.builtin.shell: |
+    {{ shell_header }}
+    {{ oc_header }}
+    cd {{ install_yamls_path }}/devsetup
+    make standalone_revert
+  when: standalone_revert_enabled|bool
 
 - name: reset CRC storage
   ansible.builtin.shell: |

@@ -18,7 +18,9 @@
 
 - name: Adoption
   hosts: local
+  force_handlers: true  # required to remove the helper pod
   gather_facts: no
+  force_handlers: true
   module_defaults:
     ansible.builtin.shell:
       executable: /bin/bash
@@ -32,4 +34,5 @@
     - glance_adoption
     - placement_adoption
     - cinder_adoption
+    - horizon_adoption
     - dataplane_adoption

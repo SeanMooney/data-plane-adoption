@@ -16,3 +16,9 @@ links:
 
 * [Tests](https://openstack-k8s-operators.github.io/data-plane-adoption/contributing/tests/) -
   information about the test suite, and how to run it.
+
+* Linting - before submitting change requests, please install pre-commit hooks:
+  ```
+  pip install pre-commit
+  pre-commit install
+  ```

@@ -37,8 +37,8 @@ just illustrative, use values that are correct for your environment:
 ```
 MARIADB_IMAGE=quay.io/podified-antelope-centos9/openstack-mariadb:current-podified
 
-PODIFIED_MARIADB_IP=$(oc get -o yaml pod mariadb-openstack | grep podIP: | awk '{ print $2; }')
-PODIFIED_CELL1_MARIADB_IP=$(oc get -o yaml pod  mariadb-openstack-cell1  | grep podIP: | awk '{ print $2; }')
+PODIFIED_MARIADB_IP=$(oc get svc --selector "cr=mariadb-openstack" -ojsonpath='{.items[0].spec.clusterIP}')
+PODIFIED_CELL1_MARIADB_IP=$(oc get svc --selector "cr=mariadb-openstack-cell1" -ojsonpath='{.items[0].spec.clusterIP}')
 PODIFIED_DB_ROOT_PASSWORD=$(oc get -o json secret/osp-secret | jq -r .data.DbRootPassword | base64 -d)
 
 # Replace with your environment's MariaDB IP:
@@ -104,7 +104,7 @@ COLLATION=utf8_general_ci
   EOF
   ```
 
-* Restore the databases from .sql files into the podified MariaDB:
+* Restore the databases from .sql files into the podified MariaDBs:
 
   ```
   # db schemas to rename on import
@@ -167,3 +167,9 @@ COLLATION=utf8_general_ci
   mysql -h "${PODIFIED_CELL1_MARIADB_IP}" -uroot "-p${PODIFIED_DB_ROOT_PASSWORD}" -e 'SHOW databases;' \
       | grep nova_cell1
   ```
+
+* During the pre/post checks the pod `mariadb-client` might have returned a pod security warning
+  related to the `restricted:latest` security context constraint. This is due to default security
+  context constraints and will not prevent pod creation by the admission controller. You'll see a
+  warning for the short-lived pod but it will not interfere with functionality.
+  For more info [visit here](https://learn.redhat.com/t5/DO280-Red-Hat-OpenShift/About-pod-security-standards-and-warnings/m-p/32502)

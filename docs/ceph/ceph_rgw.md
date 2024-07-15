@@ -400,7 +400,7 @@ iptables -I INPUT -p tcp -m tcp --dport 8080 -m conntrack --ctstate NEW -m comme
 
 iptables -I INPUT -p tcp -m tcp --dport 8090 -m conntrack --ctstate NEW -m comment --comment "ceph rgw backends" -j ACCEPT
 
-for port in 8080 8090; { 
+for port in 8080 8090; {
     for i in 25 10 32; {
        ssh heat-admin@192.168.24.$i sudo iptables -I INPUT \
        -p tcp -m tcp --dport $port -m conntrack --ctstate NEW \
@@ -629,7 +629,7 @@ DEBUG:swiftclient:Versionless auth_url - using http://10.0.0.115:5000/v3 as endp
 DEBUG:keystoneclient.auth.identity.v3.base:Making authentication request to http://10.0.0.115:5000/v3/auth/tokens
 DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): 10.0.0.115:5000
 DEBUG:urllib3.connectionpool:http://10.0.0.115:5000 "POST /v3/auth/tokens HTTP/1.1" 201 7795
-DEBUG:keystoneclient.auth.identity.v3.base:{"token": {"methods": ["password"], "user": {"domain": {"id": "default", "name": "Default"}, "id": "6f87c7ffdddf463bbc633980cfd02bb3", "name": "admin", "password_expires_at": null}, 
+DEBUG:keystoneclient.auth.identity.v3.base:{"token": {"methods": ["password"], "user": {"domain": {"id": "default", "name": "Default"}, "id": "6f87c7ffdddf463bbc633980cfd02bb3", "name": "admin", "password_expires_at": null},
 
 
 ...

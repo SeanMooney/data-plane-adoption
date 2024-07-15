@@ -106,28 +106,15 @@ make standalone_revert
 
 Similar snapshot could be done for the CRC virtual machine, but the
 developer environment reset on CRC side can be done sufficiently via
-the install_yamls `*_cleanup` targets. This is further detailed in 
-the section: 
+the install_yamls `*_cleanup` targets. This is further detailed in
+the section:
 [Reset the environment to pre-adoption state](https://openstack-k8s-operators.github.io/data-plane-adoption/contributing/development_environment/#reset-the-environment-to-pre-adoption-state)
 
 ### Create a workload to adopt
 
-For this example we'll upload a Glance image and confirm it's using
-the Ceph cluster. Later you can adopt the Glance image in the NG
-deployment.
-
-Download a cirros image and convert it to raw format for Ceph.
-```
-IMG=cirros-0.5.2-x86_64-disk.img
-URL=http://download.cirros-cloud.net/0.5.2/$IMG
-RAW=$(echo $IMG | sed s/img/raw/g)
-curl -L -# $URL > $IMG
-qemu-img convert -f qcow2 -O raw $IMG $RAW
-```
-Upload the image to Glance.
 ```
 export OS_CLOUD=standalone
-openstack image create cirros --disk-format=raw --container-format=bare < $RAW
+source ~/install_yamls/devsetup/scripts/edpm-deploy-instance.sh
 ```
 Confirm the image UUID can be seen in Ceph's images pool.
 ```
@@ -141,11 +128,9 @@ openstack volume backup create --name backup disk
 openstack volume snapshot create --volume disk snapshot
 ```
 
-Boot a VM
+Add volume to the test VM
 ```
-openstack flavor create tiny --id auto --ram 256 --disk 0 --vcpus 1
-openstack --os-compute-api-version 2.37 server create --flavor tiny --image cirros --nic none --wait vm
-openstack server add volume vm disk
+openstack server add volume test disk
 ```
 
 ## Performing the Data Plane Adoption
@@ -158,7 +143,7 @@ against your environment.
 
 ## Reset the environment to pre-adoption state
 
-The development environment must be rolled back in case we want to execute another Adoption run. 
+The development environment must be rolled back in case we want to execute another Adoption run.
 
 Delete the data-plane and control-plane resources from the CRC vm
 ```
@@ -172,7 +157,7 @@ Revert the standalone vm to the snapshotted state
 cd install_yamls/devsetup
 make standalone_revert
 ```
-Clean up and initialize the storage PVs in CRC vm 
+Clean up and initialize the storage PVs in CRC vm
 ```
 cd ..
 make crc_storage_cleanup
@@ -301,7 +286,7 @@ Do not set `EDPM_COMPUTE_SUFFIX` to `0` or you could delete
 the Wallaby system created in the previous section.
 
 When deploying EDPM nodes add an `extraMounts` like the following in
-the `OpenStackDataPlane` CR `nodeTemplate` so that they will be
+the `OpenStackDataPlaneNodeSet` CR `nodeTemplate` so that they will be
 configured to use the same Ceph cluster.
 
 ```

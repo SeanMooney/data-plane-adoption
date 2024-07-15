@@ -1,0 +1,2 @@
+- name: stop adoption helper pod
+  command: oc delete pod adoption --ignore-not-found=true
